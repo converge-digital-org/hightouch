@@ -1,7 +1,6 @@
-//HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 8/19/2024 AT 1:44 PM PT//
-// Update: Capture GBRAID and WBRAID Paramters
-// Update: Generate FBC (Facebook Click ID)
-// Update: Generate FBP (Facebook Browser ID)
+//HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 9/9/2024 AT 4:35 PM PT//
+// Update: Updated 'category' variable to 'pageview'
+// Update: Removed 'directory' variable
 
 // Enable debugging in development mode
 window.htevents.debug(false);
@@ -56,7 +55,6 @@ async function getAdditionalParams() {
         },
         fbc: fbclid ? generateFBC(fbclid) : null,
         fbp: fbclid ? generateFBP(fbclid) : null,
-        directory: window.location.pathname.split('/')[1]
     };
 }
 
@@ -87,9 +85,8 @@ function getCategoryFromDataLayer() {
 async function trackPageView() {
     const additionalParams = await getAdditionalParams();
     const eventName = document.title;
-    const eventCategory = getCategoryFromDataLayer();
     window.htevents.page(
-        eventCategory, // category of the event from dataLayer
+        pageview, // category of the event from dataLayer
         eventName, // name of the event from page title
         {
             hostname: window.location.hostname,
