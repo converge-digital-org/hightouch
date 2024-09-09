@@ -72,15 +72,6 @@ function generateFBP(fbclid) {
     return `fb.1.${timestamp}.${randomDigits}`;
 }
 
-// Function to get the category from the dataLayer
-function getCategoryFromDataLayer() {
-    if (window.dataLayer) {
-        const ecommPageType = window.dataLayer.find(item => item.ecomm_pagetype);
-        return ecommPageType ? ecommPageType.ecomm_pagetype : 'Unknown';
-    }
-    return 'Unknown';
-}
-
 // Function to track page views
 async function trackPageView() {
     const additionalParams = await getAdditionalParams();
