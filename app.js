@@ -1,7 +1,8 @@
-// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 9/20/2024 AT 12:09 PM PT //
+// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 9/20/2024 AT 3:42 PM PT //
 // Update: Capture GBRAID and WBRAID Paramters
 // Update: Grab FBC or Generate FBC (Facebook Click ID)
 // Update: Grab FBC or Generate FBP (Facebook Browser ID)
+// Update: Generate GUID for Device ID
 
 function removeEmptyProperties(obj) {
     if (typeof obj !== "object" || obj === null) return obj;
@@ -15,6 +16,25 @@ function removeEmptyProperties(obj) {
 
 // Enable debugging in development mode
 window.htevents.debug(false);
+
+// Function to generate a 36-character, 128-bit GUID with hyphens
+function generateGUID() {
+    // Generate a GUID in the format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+// Function to get or generate a unique Device ID (GUID)
+function getDeviceId() {
+    let deviceId = localStorage.getItem('device_id');
+    if (!deviceId) {
+        deviceId = generateGUID();  // Generate a new GUID
+        localStorage.setItem('device_id', deviceId);  // Store in local storage
+    }
+    return deviceId;
+}
 
 // Function to get additional parameters
 async function getAdditionalParams() {
@@ -66,11 +86,12 @@ async function getAdditionalParams() {
         },
         fbc: getFBC(fbclid),
         fbp: getFBP(),
+        device_id: getDeviceId(), // Add generated device ID here
         directory: window.location.pathname.split('/')[1]
     };
 }
 
-// Function to get or generate FBC (Facebook Click ID) parameter
+// Function to generate FBC (Facebook Click ID) parameter
 function getFBC(fbclid) {
     const cookieValue = document.cookie
         .split('; ')
