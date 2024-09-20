@@ -36,6 +36,16 @@ function getDeviceId() {
     return deviceId;
 }
 
+// Function to get or generate a unique Session ID (GUID)
+function getSessionId() {
+    let sessionId = sessionStorage.getItem('session_id');
+    if (!sessionId) {
+        sessionId = generateGUID();  // Generate a new GUID for the session
+        sessionStorage.setItem('session_id', sessionId);  // Store in session storage
+    }
+    return sessionId;
+}
+
 // Function to get additional parameters
 async function getAdditionalParams() {
     let ipData = {};
