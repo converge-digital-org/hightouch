@@ -1,7 +1,17 @@
-//HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 8/19/2024 AT 1:44 PM PT//
+// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 9/20/2024 AT 12:09 PM PT //
 // Update: Capture GBRAID and WBRAID Paramters
-// Update: Generate FBC (Facebook Click ID)
-// Update: Generate FBP (Facebook Browser ID)
+// Update: Grab FBC or Generate FBC (Facebook Click ID)
+// Update: Grab FBC or Generate FBP (Facebook Browser ID)
+
+function removeEmptyProperties(obj) {
+    if (typeof obj !== "object" || obj === null) return obj;
+    for (const key in obj) if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        typeof value === "object" && value !== null && (obj[key] = removeEmptyProperties(value));
+        (obj[key] === null || obj[key] === "" || obj[key] === undefined) && delete obj[key];
+    }
+    return Object.keys(obj).length === 0 && obj.constructor === Object ? {} : obj;
+}
 
 // Enable debugging in development mode
 window.htevents.debug(false);
@@ -54,24 +64,56 @@ async function getAdditionalParams() {
             gbraid: urlParams.get('gbraid'),
             wbraid: urlParams.get('wbraid')
         },
-        fbc: fbclid ? generateFBC(fbclid) : null,
-        fbp: fbclid ? generateFBP(fbclid) : null,
+        fbc: getFBC(fbclid),
+        fbp: getFBP(),
         directory: window.location.pathname.split('/')[1]
     };
 }
 
-// Function to generate FBC (Facebook Click ID) parameter
-function generateFBC(fbclid) {
-    const domain = window.location.hostname;
-    const timestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-    return `fb.${domain}.${timestamp}.${fbclid}`;
+// Function to get or generate FBC (Facebook Click ID) parameter
+function getFBC(fbclid) {
+    const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('_fbc='))
+        ?.split('=')[1];
+
+    return cookieValue || generateFBC(fbclid);
 }
 
-// Function to generate FBP (Facebook Browser ID) parameter
-function generateFBP(fbclid) {
-    const randomDigits = Math.floor(1000000000 + Math.random() * 9000000000); // Random 10-digit number
+// Function to generate FBC if not found
+function generateFBC(fbclid) {
+    if (!fbclid) return null;
+    const domain = window.location.hostname;
     const timestamp = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-    return `fb.1.${timestamp}.${randomDigits}`;
+    const fbc = `fb.${domain}.${timestamp}.${fbclid}`;
+
+    // Store the generated _fbc cookie for future use (expires in 90 days)
+    document.cookie = `_fbc=${fbc}; path=/; expires=${new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toUTCString()}; SameSite=Lax`;
+
+    return fbc;
+}
+
+// Function to get or generate FBP (Facebook Browser ID) parameter
+function getFBP() {
+    const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('_fbp='))
+        ?.split('=')[1];
+
+    return cookieValue || generateFBP();
+}
+
+// Function to generate FBP if not found
+function generateFBP() {
+    const version = 'fb.1.';
+    const timestamp = Math.floor(new Date().getTime() / 1000); // Current Unix time in seconds
+    const randomNumber = Math.random().toString(36).substring(2, 15); // Random session ID
+    const fbp = version + timestamp + '.' + randomNumber;
+
+    // Store the generated _fbp cookie for future use (expires in 90 days)
+    document.cookie = `_fbp=${fbp}; path=/; expires=${new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toUTCString()}; SameSite=Lax`;
+
+    return fbp;
 }
 
 // Function to get the category from the dataLayer
@@ -101,7 +143,7 @@ async function trackPageView() {
             ip: additionalParams.ipAddress
         },
         function() {
-            console.log("Page view tracked:", document.title);
+            //console.log("Page view tracked:", document.title);
         }
     );
 }
