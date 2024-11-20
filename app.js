@@ -98,7 +98,7 @@ async function getAdditionalParams() {
         fbp: getFBP(),
         device_id: getDeviceId(), // Add generated device ID here
         directory: window.location.pathname.split('/')[1],
-        user_id: getUserIdFromDataLayer() // Include user_id from the data layer
+        gtag_user_id: getUserIdFromDataLayer() // Include user_id from the data layer
     };
 }
 
