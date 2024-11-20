@@ -46,6 +46,39 @@ function getSessionId() {
     return sessionId;
 }
 
+// Function to get data from the data layer
+function getDataLayerInfo() {
+    if (window.dataLayer) {
+        let sessionInfo = {};
+        let userInfo = {};
+        let clientInfo = {};
+
+        // Iterate over dataLayer entries
+        window.dataLayer.forEach(item => {
+            if (Array.isArray(item)) {
+                // Capture session_id
+                if (item[2] === "session_id") {
+                    sessionInfo = { sessionId: item[2], sessionValue: item[0] };
+                }
+
+                // Capture user_id
+                if (item[0] === "set" && typeof item[2] === "object" && item[2].user_id) {
+                    userInfo = { userId: item[2].user_id, action: item[0], id: item[1] };
+                }
+
+                // Capture client_id
+                if (item[2] === "client_id") {
+                    clientInfo = { clientId: item[2], clientValue: item[0], clientIdSource: item[1] };
+                }
+            }
+        });
+
+        return { ...sessionInfo, ...userInfo, ...clientInfo };
+    }
+    return {};
+}
+
+
 // Function to get additional parameters
 async function getAdditionalParams() {
     let ipData = {};
@@ -98,6 +131,8 @@ async function getAdditionalParams() {
         fbp: getFBP(),
         device_id: getDeviceId(), // Add generated device ID here
         directory: window.location.pathname.split('/')[1]
+        dataLayerInfo // Include session_id, user_id, and client_id information from the data layer
+
     };
 }
 
