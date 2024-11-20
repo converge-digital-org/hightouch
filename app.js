@@ -156,22 +156,12 @@ function getCategoryFromDataLayer() {
     return 'Unknown';
 }
 
-// Function to get the Google Session ID from the dataLayer
-function getSessionIdFromDataLayer() {
-    if (window.dataLayer) {
-        const gSessionId = window.dataLayer.find(item => item.2.user_id);
-        return gSessionId ? gSessionId.gSessionId : 'Unknown';
-    }
-    return 'Unknown';
-}
-
 
 // Function to track page views
 async function trackPageView() {
     const additionalParams = await getAdditionalParams();
     const eventName = document.title;
     const eventCategory = getCategoryFromDataLayer();
-    const gSessionId = getSessionIdFromDataLayer();
     window.htevents.page(
         eventCategory, // category of the event from dataLayer
         eventName, // name of the event from page title
