@@ -134,7 +134,7 @@ async function getAdditionalParams() {
         fbc: getFBC(fbclid),
         fbp: getFBP(),
         device_id: getDeviceId(), // Add generated device ID here
-        directory: window.location.pathname.split('/')[1]
+        directory: window.location.pathname.split('/')[1],
         dataLayerInfo // Include session_id, user_id, and client_id information from the data layer
 
     };
