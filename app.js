@@ -1,8 +1,4 @@
-// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 9/20/2024 AT 3:42 PM PT //
-// Update: Capture GBRAID and WBRAID Parameters
-// Update: Grab FBC or Generate FBC (Facebook Click ID)
-// Update: Grab FBC or Generate FBP (Facebook Browser ID)
-// Update: Generate GUID for Device ID
+// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 11/20/2024 AT 2:12 PM PT //
 
 function removeEmptyProperties(obj) {
     if (typeof obj !== "object" || obj === null) return obj;
@@ -54,24 +50,6 @@ function getUserIdFromDataLayer() {
     return null;
 }
 
-// Function to get "client_id" from the data layer
-function getClientIdFromDataLayer() {
-    if (window.dataLayer) {
-        const clientEvent = window.dataLayer.find(item => item[2] === "client_id");
-        return clientEvent ? clientEvent[1] : null; // Return the second property
-    }
-    return null;
-}
-
-// Function to get "session_id" from the data layer
-function getSessionIdFromDataLayer() {
-    if (window.dataLayer) {
-        const sessionEvent = window.dataLayer.find(item => item[2] === "session_id");
-        return sessionEvent ? sessionEvent[1] : null; // Return the second property
-    }
-    return null;
-}
-
 // Function to generate FBC (Facebook Click ID) parameter
 function getFBC(fbclid) {
     const cookieValue = document.cookie
@@ -116,7 +94,7 @@ function generateFBP() {
     return fbp;
 }
 
-// Function to get additional parameters (updated to include "user_id", "client_id", and "session_id")
+// Function to get additional parameters (includes only "user_id")
 async function getAdditionalParams() {
     let ipData = {};
     try {
@@ -167,9 +145,7 @@ async function getAdditionalParams() {
         fbp: getFBP(),
         device_id: getDeviceId(),
         directory: window.location.pathname.split('/')[1],
-        g_user_id: getUserIdFromDataLayer(),
-        g_client_id: getClientIdFromDataLayer(),
-        g_session_id: getSessionIdFromDataLayer()
+        user_id: getUserIdFromDataLayer()
     };
 }
 
