@@ -156,7 +156,6 @@ function getCategoryFromDataLayer() {
     return 'Unknown';
 }
 
-
 // Function to track page views
 async function trackPageView() {
     const additionalParams = await getAdditionalParams();
