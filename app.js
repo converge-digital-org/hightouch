@@ -104,6 +104,10 @@ async function getAdditionalParams() {
     const urlParams = new URLSearchParams(window.location.search);
     const fbclid = urlParams.get('fbclid');
 
+     // Include data layer information
+    const dataLayerInfo = getDataLayerInfo();
+
+
     return {
         ...ipData,
         utmParameters: {
