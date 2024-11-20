@@ -1,5 +1,5 @@
 // HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 9/20/2024 AT 3:42 PM PT //
-// Update: Capture GBRAID and WBRAID Paramters
+// Update: Capture GBRAID and WBRAID Parameters
 // Update: Grab FBC or Generate FBC (Facebook Click ID)
 // Update: Grab FBC or Generate FBP (Facebook Browser ID)
 // Update: Generate GUID for Device ID
@@ -46,7 +46,7 @@ function getSessionId() {
     return sessionId;
 }
 
-// Function to get additional parameters
+// Function to get additional parameters (updated to include "user_id")
 async function getAdditionalParams() {
     let ipData = {};
     try {
@@ -97,8 +97,18 @@ async function getAdditionalParams() {
         fbc: getFBC(fbclid),
         fbp: getFBP(),
         device_id: getDeviceId(), // Add generated device ID here
-        directory: window.location.pathname.split('/')[1]
+        directory: window.location.pathname.split('/')[1],
+        user_id: getUserIdFromDataLayer() // Include user_id from the data layer
     };
+}
+
+// Function to extract "user_id" from the data layer
+function getUserIdFromDataLayer() {
+    if (window.dataLayer) {
+        const userEvent = window.dataLayer.find(item => item[2] && item[2].user_id);
+        return userEvent ? userEvent[2].user_id : null;
+    }
+    return null;
 }
 
 // Function to generate FBC (Facebook Click ID) parameter
