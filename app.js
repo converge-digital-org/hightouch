@@ -35,9 +35,9 @@ function getDeviceId() {
     return deviceId;
 }
 
-// Function to get data from the data layer
 function getDataLayerInfo() {
     if (window.dataLayer) {
+        console.log('Data Layer:', window.dataLayer); // Log data layer for debugging
         let sessionInfo = {};
         let userInfo = {};
         let clientInfo = {};
@@ -45,20 +45,34 @@ function getDataLayerInfo() {
         // Iterate over dataLayer entries
         window.dataLayer.forEach(item => {
             if (Array.isArray(item)) {
+                console.log('Inspecting Data Layer Item:', item); // Debug each item
+
+                // Capture session_id
                 if (item[2] === "session_id") {
                     sessionInfo = { sessionId: item[2], sessionValue: item[0] };
                 }
+
+                // Capture user_id
                 if (item[0] === "set" && typeof item[2] === "object" && item[2].user_id) {
                     userInfo = { userId: item[2].user_id, action: item[0], id: item[1] };
                 }
+
+                // Capture client_id
                 if (item[2] === "client_id") {
                     clientInfo = { clientId: item[2], clientValue: item[0], clientIdSource: item[1] };
                 }
             }
         });
 
+        // Debug extracted values
+        console.log('Session Info:', sessionInfo);
+        console.log('User Info:', userInfo);
+        console.log('Client Info:', clientInfo);
+
         return { ...sessionInfo, ...userInfo, ...clientInfo };
     }
+
+    console.warn('Data Layer not found.');
     return {};
 }
 
