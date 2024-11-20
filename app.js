@@ -81,7 +81,7 @@ async function getAdditionalParams() {
             term: urlParams.get('utm_term'),
             content: urlParams.get('utm_content'),
             fbclid: fbclid,
-            glclid: urlParams.get('glclid'),
+            gclid: urlParams.get('gclid'),
             atrefid: urlParams.get('atrefid'),
             ad_id: urlParams.get('ad_id'),
             adset_id: urlParams.get('adset_id'),
