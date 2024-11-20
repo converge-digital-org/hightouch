@@ -35,45 +35,64 @@ function getDeviceId() {
     return deviceId;
 }
 
+// Function to get data from the data layer
 function getDataLayerInfo() {
     if (window.dataLayer) {
-        console.log('Data Layer:', window.dataLayer); // Log data layer for debugging
+        console.log('Inspecting Data Layer:', window.dataLayer);
         let sessionInfo = {};
         let userInfo = {};
         let clientInfo = {};
 
         // Iterate over dataLayer entries
         window.dataLayer.forEach(item => {
-            if (Array.isArray(item)) {
-                console.log('Inspecting Data Layer Item:', item); // Debug each item
+            console.log('Inspecting Item:', item);
 
+            if (Array.isArray(item)) {
                 // Capture session_id
                 if (item[2] === "session_id") {
+                    console.log('Session ID Found:', item[2]);
                     sessionInfo = { sessionId: item[2], sessionValue: item[0] };
                 }
 
                 // Capture user_id
                 if (item[0] === "set" && typeof item[2] === "object" && item[2].user_id) {
+                    console.log('User ID Found:', item[2].user_id);
                     userInfo = { userId: item[2].user_id, action: item[0], id: item[1] };
                 }
 
                 // Capture client_id
                 if (item[2] === "client_id") {
+                    console.log('Client ID Found:', item[2]);
                     clientInfo = { clientId: item[2], clientValue: item[0], clientIdSource: item[1] };
                 }
             }
         });
-
-        // Debug extracted values
-        console.log('Session Info:', sessionInfo);
-        console.log('User Info:', userInfo);
-        console.log('Client Info:', clientInfo);
 
         return { ...sessionInfo, ...userInfo, ...clientInfo };
     }
 
     console.warn('Data Layer not found.');
     return {};
+}
+
+// Function to wait for data layer to be populated
+function waitForDataLayer(callback, timeout = 10000) {
+    const interval = 100; // Check every 100ms
+    let elapsedTime = 0;
+
+    const checkDataLayer = setInterval(() => {
+        if (window.dataLayer && window.dataLayer.length > 0) {
+            console.log('Data Layer Detected:', window.dataLayer);
+            clearInterval(checkDataLayer); // Stop checking
+            callback(); // Execute the callback when dataLayer is ready
+        }
+
+        elapsedTime += interval;
+        if (elapsedTime >= timeout) {
+            clearInterval(checkDataLayer);
+            console.warn('Data Layer not detected within timeout.');
+        }
+    }, interval);
 }
 
 // Function to get additional parameters
@@ -119,78 +138,4 @@ async function getAdditionalParams() {
             ad_name: urlParams.get('ad_name'),
             adset_name: urlParams.get('adset_name'),
             campaign_name: urlParams.get('campaign_name'),
-            placement: urlParams.get('placement'),
-            site_source_name: urlParams.get('site_source_name'),
-            gbraid: urlParams.get('gbraid'),
-            wbraid: urlParams.get('wbraid')
-        },
-        fbc: getFBC(fbclid),
-        fbp: getFBP(),
-        device_id: getDeviceId(),
-        directory: window.location.pathname.split('/')[1],
-        ...dataLayerInfo
-    };
-}
-
-// Function to generate FBC (Facebook Click ID) parameter
-function getFBC(fbclid) {
-    const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('_fbc='))
-        ?.split('=')[1];
-
-    return cookieValue || generateFBC(fbclid);
-}
-
-// Function to generate FBC if not found
-function generateFBC(fbclid) {
-    if (!fbclid) return null;
-    const domain = window.location.hostname;
-    const timestamp = Math.floor(Date.now() / 1000);
-    const fbc = `fb.${domain}.${timestamp}.${fbclid}`;
-    document.cookie = `_fbc=${fbc}; path=/; expires=${new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toUTCString()}; SameSite=Lax`;
-    return fbc;
-}
-
-// Function to get or generate FBP (Facebook Browser ID) parameter
-function getFBP() {
-    const cookieValue = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('_fbp='))
-        ?.split('=')[1];
-
-    return cookieValue || generateFBP();
-}
-
-// Function to generate FBP if not found
-function generateFBP() {
-    const version = 'fb.1.';
-    const timestamp = Math.floor(Date.now() / 1000);
-    const randomNumber = Math.random().toString(36).substring(2, 15);
-    const fbp = version + timestamp + '.' + randomNumber;
-    document.cookie = `_fbp=${fbp}; path=/; expires=${new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toUTCString()}; SameSite=Lax`;
-    return fbp;
-}
-
-// Function to track page views
-async function trackPageView() {
-    const additionalParams = await getAdditionalParams();
-    const eventName = document.title;
-    window.htevents.page(
-        eventName, // name of the event from page title
-        {
-            hostname: window.location.hostname,
-            path: window.location.pathname,
-            ...additionalParams
-        },
-        {
-            ip: additionalParams.ipAddress
-        },
-        function() {
-            console.log("Page view tracked:", document.title);
-        }
-    );
-}
-
-// Track initial page view on load
-trackPageView();
+            placement
