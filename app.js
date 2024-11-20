@@ -167,9 +167,9 @@ async function getAdditionalParams() {
         fbp: getFBP(),
         device_id: getDeviceId(),
         directory: window.location.pathname.split('/')[1],
-        user_id: getUserIdFromDataLayer(),
-        client_id: getClientIdFromDataLayer(),
-        session_id: getSessionIdFromDataLayer()
+        g_user_id: getUserIdFromDataLayer(),
+        g_client_id: getClientIdFromDataLayer(),
+        g_session_id: getSessionIdFromDataLayer()
     };
 }
 
