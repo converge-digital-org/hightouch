@@ -57,8 +57,8 @@ function getUserIdFromDataLayer() {
 // Function to get "client_id" from the data layer
 function getClientIdFromDataLayer() {
     if (window.dataLayer) {
-        const clientEvent = window.dataLayer.find(item => item[2] === 'client_id');
-        return clientEvent ? clientEvent[2] : null;
+        const clientEvent = window.dataLayer.find(item => item[2] === "client_id");
+        return clientEvent ? clientEvent[1] : null; // Return the second property
     }
     return null;
 }
@@ -66,8 +66,8 @@ function getClientIdFromDataLayer() {
 // Function to get "session_id" from the data layer
 function getSessionIdFromDataLayer() {
     if (window.dataLayer) {
-        const sessionEvent = window.dataLayer.find(item => item[2] === 'session_id');
-        return sessionEvent ? sessionEvent[2] : null;
+        const sessionEvent = window.dataLayer.find(item => item[2] === "session_id");
+        return sessionEvent ? sessionEvent[1] : null; // Return the second property
     }
     return null;
 }
@@ -167,9 +167,9 @@ async function getAdditionalParams() {
         fbp: getFBP(),
         device_id: getDeviceId(),
         directory: window.location.pathname.split('/')[1],
-        gtag_user_id: getUserIdFromDataLayer(),
-        gtag_client_id: getClientIdFromDataLayer(),
-        gtag_session_id: getSessionIdFromDataLayer()
+        user_id: getUserIdFromDataLayer(),
+        client_id: getClientIdFromDataLayer(),
+        session_id: getSessionIdFromDataLayer()
     };
 }
 
