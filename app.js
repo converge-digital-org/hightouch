@@ -251,7 +251,8 @@ function handleAddToCartEvent(data) {
             price: parseFloat(item.price),
             quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
-            currency: data.ecommerce.currency
+            currency: data.ecommerce.currency,
+            ...additionalParams // Merge additional parameters into the payload
         };
 
         window.htevents.track(
@@ -278,7 +279,8 @@ function handleRemoveFromCartEvent(data) {
             price: parseFloat(item.price),
             quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
-            currency: data.ecommerce.currency
+            currency: data.ecommerce.currency,
+            ...additionalParams // Merge additional parameters into the payload
         };
 
         window.htevents.track(
