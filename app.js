@@ -180,5 +180,76 @@ async function trackPageView() {
     );
 }
 
+// Function to track "add_to_cart" event
+async function trackAddToCart(productData) {
+    const additionalParams = await getAdditionalParams();
+    const eventData = {
+        ...productData,
+        ...additionalParams // Merges additional data (e.g., user and session info)
+    };
+
+    window.htevents.track(
+        'add_to_cart', // Event name
+        eventData,
+        {
+            ip: additionalParams.ipAddress
+        },
+        function() {
+            console.log('Add to Cart event tracked:', eventData);
+        }
+    );
+}
+
 // Track initial page view on load
 trackPageView();
+
+// Function to track Add To Cart events using dataLayer
+function trackAddToCartFromDataLayer(eventData) {
+    const additionalParams = getAdditionalParams(); // Reuse existing function to get parameters
+    additionalParams.then((params) => {
+        // Loop through each item in the event
+        eventData.ecommerce.items.forEach((item) => {
+            window.htevents.track(
+                "Add To Cart", // Event name
+                {
+                    item_id: item.item_id,
+                    item_name: item.item_name,
+                    price: parseFloat(item.price),
+                    quantity: item.quantity,
+                    value: parseFloat(eventData.ecommerce.value),
+                    currency: eventData.ecommerce.currency,
+                    ...params
+                },
+                {
+                    ip: params.ipAddress // Optional: Include user IP
+                },
+                function() {
+                    console.log("Add To Cart event tracked:", item);
+                }
+            );
+        });
+    }).catch(error => {
+        console.error("Error tracking Add To Cart from dataLayer:", error);
+    });
+}
+
+// Function to monitor dataLayer for Add To Cart events
+function monitorDataLayer() {
+    const originalPush = window.dataLayer.push;
+    window.dataLayer.push = function(data) {
+        originalPush.apply(window.dataLayer, arguments); // Ensure the original push functionality is retained
+        if (data.event === "add_to_cart" && data.ecommerce) {
+            trackAddToCartFromDataLayer(data);
+        }
+    };
+
+    // Check if the dataLayer already contains an Add To Cart event
+    window.dataLayer.forEach((entry) => {
+        if (entry.event === "add_to_cart" && entry.ecommerce) {
+            trackAddToCartFromDataLayer(entry);
+        }
+    });
+}
+
+// Initialize dataLayer monitoring
+document.addEventListener("DOMContentLoaded", monitorDataLayer);
