@@ -258,12 +258,12 @@ function handleAddToCartEvent(data) {
             "add_to_cart",
             eventPayload,
             {
-            hostname: window.location.hostname,
-            path: window.location.pathname,
-            ...additionalParams
+                hostname: window.location.hostname,
+                path: window.location.pathname,
+                ...additionalParams
             },
             {
-            ip: additionalParams.ipAddress
+                ip: additionalParams.ipAddress
             },
             function() {
                 console.log("add_to_cart event successfully tracked to Hightouch:", eventPayload);
