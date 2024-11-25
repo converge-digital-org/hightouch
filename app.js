@@ -215,6 +215,12 @@ function monitorDataLayer() {
             console.log("Processing add_to_cart event:", data);
             handleAddToCartEvent(data);
         }
+
+        // Check for remove_from_cart event
+        if (data.event === "remove_from_cart") {
+            console.log("Processing remove_from_cart event:", data);
+            handleRemoveFromCartEvent(data);
+        }
     };
 }
 
@@ -232,13 +238,11 @@ if (document.readyState === "loading") {
 }
 
 function handleAddToCartEvent(data) {
-    // Validate the ecommerce object and items array
     if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
         console.warn("add_to_cart event is missing required ecommerce or items data:", data);
         return;
     }
 
-    // Extract items and loop through each one
     data.ecommerce.items.forEach(item => {
         const eventPayload = {
             item_id: item.item_id,
@@ -249,13 +253,39 @@ function handleAddToCartEvent(data) {
             currency: data.ecommerce.currency
         };
 
-        // Send the event to Hightouch
         window.htevents.track(
-            "add_to_cart", // Event name
+            "add_to_cart",
             eventPayload,
-            {}, // Optional: Include additional metadata like IP address if needed
+            {},
             function() {
                 console.log("add_to_cart event successfully tracked to Hightouch:", eventPayload);
+            }
+        );
+    });
+}
+
+function handleRemoveFromCartEvent(data) {
+    if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
+        console.warn("remove_from_cart event is missing required ecommerce or items data:", data);
+        return;
+    }
+
+    data.ecommerce.items.forEach(item => {
+        const eventPayload = {
+            item_id: item.item_id,
+            item_name: item.item_name,
+            price: parseFloat(item.price),
+            quantity: parseInt(item.quantity, 10),
+            value: parseFloat(data.ecommerce.value),
+            currency: data.ecommerce.currency
+        };
+
+        window.htevents.track(
+            "remove_from_cart",
+            eventPayload,
+            {},
+            function() {
+                console.log("remove_from_cart event successfully tracked to Hightouch:", eventPayload);
             }
         );
     });
