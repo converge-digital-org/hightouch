@@ -244,6 +244,8 @@ function handleAddToCartEvent(data) {
         return;
     }
 
+    const additionalParams = await getAdditionalParams();
+
     data.ecommerce.items.forEach(item => {
         const eventPayload = {
             item_id: item.item_id,
@@ -251,8 +253,7 @@ function handleAddToCartEvent(data) {
             price: parseFloat(item.price),
             quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
-            currency: data.ecommerce.currency,
-            ...additionalParams // Merge additional parameters into the payload
+            currency: data.ecommerce.currency
         };
 
         window.htevents.track(
@@ -272,6 +273,8 @@ function handleRemoveFromCartEvent(data) {
         return;
     }
 
+    const additionalParams = await getAdditionalParams();
+
     data.ecommerce.items.forEach(item => {
         const eventPayload = {
             item_id: item.item_id,
@@ -279,8 +282,7 @@ function handleRemoveFromCartEvent(data) {
             price: parseFloat(item.price),
             quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
-            currency: data.ecommerce.currency,
-            ...additionalParams // Merge additional parameters into the payload
+            currency: data.ecommerce.currency
         };
 
         window.htevents.track(
