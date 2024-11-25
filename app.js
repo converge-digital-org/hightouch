@@ -205,12 +205,13 @@ trackPageView();
 
 // Function to track Add To Cart events using dataLayer
 function trackAddToCartFromDataLayer(eventData) {
-    const additionalParams = getAdditionalParams(); // Reuse existing function to get parameters
+    console.log("Tracking Add To Cart:", eventData); // Debug message
+    const additionalParams = getAdditionalParams();
     additionalParams.then((params) => {
-        // Loop through each item in the event
         eventData.ecommerce.items.forEach((item) => {
+            console.log("Tracking item:", item); // Debug message
             window.htevents.track(
-                "Add To Cart", // Event name
+                "Add To Cart",
                 {
                     item_id: item.item_id,
                     item_name: item.item_name,
@@ -221,7 +222,7 @@ function trackAddToCartFromDataLayer(eventData) {
                     ...params
                 },
                 {
-                    ip: params.ipAddress // Optional: Include user IP
+                    ip: params.ipAddress
                 },
                 function() {
                     console.log("Add To Cart event tracked:", item);
