@@ -238,7 +238,7 @@ if (document.readyState === "loading") {
     monitorDataLayer();
 }
 
-function handleAddToCartEvent(data) {
+async function handleAddToCartEvent(data) {
     if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
         console.warn("add_to_cart event is missing required ecommerce or items data:", data);
         return;
@@ -253,7 +253,8 @@ function handleAddToCartEvent(data) {
             price: parseFloat(item.price),
             quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
-            currency: data.ecommerce.currency
+            currency: data.ecommerce.currency,
+            ...additionalParams // Merge additional parameters into the payload
         };
 
         window.htevents.track(
@@ -261,13 +262,13 @@ function handleAddToCartEvent(data) {
             eventPayload,
             {},
             function() {
-                console.log("add_to_cart event successfully tracked to Hightouch:", eventPayload);
+                console.log("add_to_cart event successfully tracked to Hightouch with additional params:", eventPayload);
             }
         );
     });
 }
 
-function handleRemoveFromCartEvent(data) {
+async function handleRemoveFromCartEvent(data) {
     if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
         console.warn("remove_from_cart event is missing required ecommerce or items data:", data);
         return;
@@ -282,7 +283,8 @@ function handleRemoveFromCartEvent(data) {
             price: parseFloat(item.price),
             quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
-            currency: data.ecommerce.currency
+            currency: data.ecommerce.currency,
+            ...additionalParams // Merge additional parameters into the payload
         };
 
         window.htevents.track(
@@ -290,7 +292,7 @@ function handleRemoveFromCartEvent(data) {
             eventPayload,
             {},
             function() {
-                console.log("remove_from_cart event successfully tracked to Hightouch:", eventPayload);
+                console.log("remove_from_cart event successfully tracked to Hightouch with additional params:", eventPayload);
             }
         );
     });
