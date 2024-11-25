@@ -230,3 +230,33 @@ if (document.readyState === "loading") {
     console.log("DOM already loaded (via readyState).");
     monitorDataLayer();
 }
+
+function handleAddToCartEvent(data) {
+    // Validate the ecommerce object and items array
+    if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
+        console.warn("add_to_cart event is missing required ecommerce or items data:", data);
+        return;
+    }
+
+    // Extract items and loop through each one
+    data.ecommerce.items.forEach(item => {
+        const eventPayload = {
+            item_id: item.item_id,
+            item_name: item.item_name,
+            price: parseFloat(item.price),
+            quantity: parseInt(item.quantity, 10),
+            value: parseFloat(data.ecommerce.value),
+            currency: data.ecommerce.currency
+        };
+
+        // Send the event to Hightouch
+        window.htevents.track(
+            "add_to_cart", // Event name
+            eventPayload,
+            {}, // Optional: Include additional metadata like IP address if needed
+            function() {
+                console.log("add_to_cart event successfully tracked to Hightouch:", eventPayload);
+            }
+        );
+    });
+}
