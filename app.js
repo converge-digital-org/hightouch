@@ -17,6 +17,13 @@ function monitorDataLayer() {
         originalPush.apply(window.dataLayer, arguments); // Retain original functionality
         console.log("Data layer event detected:", data); // Log the pushed data
 
+        // Log the event type
+        if (data.event) {
+            console.log("Event type detected:", data.event);
+        } else {
+            console.warn("No event type found in data:", data);
+        }
+
         // Check for add_to_cart event
         if (data.event === "add_to_cart") {
             console.log("Processing add_to_cart event:", data);
