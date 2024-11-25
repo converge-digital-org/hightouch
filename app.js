@@ -1,4 +1,5 @@
-// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 11/20/2024 AT 2:12 PM PT //
+// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 11/25/2024 AT 3:09 PM PT //
+// Additions: Implemeted 'add_to_cart' and 'remove_from_cart' events
 
 console.log("Hightouch Events script loaded");
 
@@ -256,7 +257,14 @@ function handleAddToCartEvent(data) {
         window.htevents.track(
             "add_to_cart",
             eventPayload,
-            {},
+            {
+            hostname: window.location.hostname,
+            path: window.location.pathname,
+            ...additionalParams
+            },
+            {
+            ip: additionalParams.ipAddress
+            },
             function() {
                 console.log("add_to_cart event successfully tracked to Hightouch:", eventPayload);
             }
