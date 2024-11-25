@@ -185,4 +185,35 @@ async function trackPageView() {
 // Track initial page view on load
 trackPageView();
 
-console.log("Is DOM already loaded?", document.readyState);
+console.log("Hightouch Events script loaded");
+
+// Monitor dataLayer for all events
+function monitorDataLayer() {
+    console.log("Monitoring dataLayer events...");
+
+    // Check if dataLayer exists
+    if (!window.dataLayer) {
+        console.warn("dataLayer is not defined on the page.");
+        window.dataLayer = []; // Create an empty dataLayer if it doesn't exist
+    }
+
+    // Hook into dataLayer.push to log all events
+    const originalPush = window.dataLayer.push;
+    window.dataLayer.push = function(data) {
+        originalPush.apply(window.dataLayer, arguments); // Retain original functionality
+        console.log("Data layer event detected:", data); // Log the pushed data
+    };
+}
+
+// Ensure logic runs after DOM is ready
+if (document.readyState === "loading") {
+    // DOM is still loading; wait for it to be ready
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("DOM fully loaded (via event).");
+        monitorDataLayer();
+    });
+} else {
+    // DOM is already loaded; run the logic immediately
+    console.log("DOM already loaded (via readyState).");
+    monitorDataLayer();
+}
