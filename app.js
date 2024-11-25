@@ -185,20 +185,4 @@ async function trackPageView() {
 // Track initial page view on load
 trackPageView();
 
-// Monitor dataLayer for all events
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded. Monitoring dataLayer events...");
-
-    // Check if dataLayer exists
-    if (!window.dataLayer) {
-        console.warn("dataLayer is not defined on the page.");
-        return;
-    }
-
-    // Hook into dataLayer.push to log all events
-    const originalPush = window.dataLayer.push;
-    window.dataLayer.push = function(data) {
-        originalPush.apply(window.dataLayer, arguments); // Retain original functionality
-        console.log("Data layer event detected:", data); // Log the pushed data
-    };
-});
+console.log("Is DOM already loaded?", document.readyState);
