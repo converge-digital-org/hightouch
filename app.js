@@ -191,7 +191,7 @@ console.log("Hightouch Events script loaded");
 function monitorDataLayer() {
     console.log("Monitoring dataLayer events...");
 
-    // Check if dataLayer exists
+    // Ensure dataLayer exists
     if (!window.dataLayer) {
         console.warn("dataLayer is not defined on the page.");
         window.dataLayer = []; // Create an empty dataLayer if it doesn't exist
@@ -202,6 +202,19 @@ function monitorDataLayer() {
     window.dataLayer.push = function(data) {
         originalPush.apply(window.dataLayer, arguments); // Retain original functionality
         console.log("Data layer event detected:", data); // Log the pushed data
+
+        // Log the event type
+        if (data.event) {
+            console.log("Event type detected:", data.event);
+        } else {
+            console.warn("No event type found in data:", data);
+        }
+
+        // Check for add_to_cart event
+        if (data.event === "add_to_cart") {
+            console.log("Processing add_to_cart event:", data);
+            handleAddToCartEvent(data);
+        }
     };
 }
 
