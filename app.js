@@ -1,5 +1,7 @@
 // HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 11/20/2024 AT 2:12 PM PT //
 
+console.log("Hightouch Events script loaded");
+
 function removeEmptyProperties(obj) {
     if (typeof obj !== "object" || obj === null) return obj;
     for (const key in obj) if (obj.hasOwnProperty(key)) {
