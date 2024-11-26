@@ -250,8 +250,8 @@ async function handleAddToCartEvent(data) {
         const eventPayload = {
             item_id: item.item_id,
             item_name: item.item_name,
-            price: parseFloat(item.price),
-            quantity: parseInt(item.quantity, 10),
+            item_price: parseFloat(item.price),
+            item_quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
             currency: data.ecommerce.currency,
             ...additionalParams // Merge additional parameters into the payload
@@ -280,8 +280,8 @@ async function handleRemoveFromCartEvent(data) {
         const eventPayload = {
             item_id: item.item_id,
             item_name: item.item_name,
-            price: parseFloat(item.price),
-            quantity: parseInt(item.quantity, 10),
+            item_price: parseFloat(item.price),
+            item_quantity: parseInt(item.quantity, 10),
             value: parseFloat(data.ecommerce.value),
             currency: data.ecommerce.currency,
             ...additionalParams // Merge additional parameters into the payload
