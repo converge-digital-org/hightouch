@@ -1,5 +1,5 @@
-// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 11/25/2024 AT 3:31 PM PT //
-// Additions: Implemeted 'add_to_cart' and 'remove_from_cart' events
+// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 11/26/2024 AT 3:14 PM PT //
+// Additions: Implemeted 'add_to_cart', 'remove_from_cart', and 'view_cart' events
 
 console.log("Hightouch Events script loaded");
 
