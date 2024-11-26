@@ -231,9 +231,12 @@ function monitorDataLayer() {
         }
 
         // Check for view_cart event
-        if (data.event === "view_cart") {
-            console.log("Processing view_cart event:", data);
-            handleViewCartEvent(data);
+        if (data.event) {
+            console.log(`Checking event type: '${data.event}'`); // Debug the exact event string
+            if (data.event === "view_cart") {
+                console.log("Processing view_cart event:", data);
+                handleViewCartEvent(data);
+            }
         }
     };
 }
