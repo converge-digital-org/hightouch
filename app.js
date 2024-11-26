@@ -318,8 +318,8 @@ async function handleViewCartEvent(data) {
         items: data.ecommerce.items.map(item => ({
             item_id: item.item_id,
             item_name: item.item_name,
-            price: parseFloat(item.price),
-            quantity: parseInt(item.quantity, 10)
+            item_price: parseFloat(item.price),
+            item_quantity: parseInt(item.quantity, 10)
         })),
         ...additionalParams // Merge additional parameters into the payload
     };
