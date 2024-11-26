@@ -213,30 +213,33 @@ function monitorDataLayer() {
 
         // Log the event type
         if (data.event) {
-            console.log("Event type detected:", data.event);
+            console.log(`Event type detected: '${data.event.trim().toLowerCase()}'`);
         } else {
             console.warn("No event type found in data:", data);
         }
 
         // Check for add_to_cart event
-        if (data.event === "add_to_cart") {
+        if (data.event.trim().toLowerCase() === "add_to_cart") {
             console.log("Processing add_to_cart event:", data);
             handleAddToCartEvent(data);
         }
 
         // Check for remove_from_cart event
-        if (data.event === "remove_from_cart") {
+        if (data.event.trim().toLowerCase() === "remove_from_cart") {
             console.log("Processing remove_from_cart event:", data);
             handleRemoveFromCartEvent(data);
         }
 
         // Check for view_cart event
-        if (data.event) {
-            console.log(`Checking event type: '${data.event}'`); // Debug the exact event string
-            if (data.event === "view_cart") {
-                console.log("Processing view_cart event:", data);
-                handleViewCartEvent(data);
-            }
+        if (data.event.trim().toLowerCase() === "view_cart") {
+            console.log("Processing view_cart event:", data);
+            handleViewCartEvent(data);
+        }
+
+        // Check for begin_checkout event
+        if (data.event.trim().toLowerCase() === "begin_checkout") {
+            console.log("Processing begin_checkout event:", data);
+            handleBeginCheckoutEvent(data);
         }
     };
 }
@@ -342,6 +345,42 @@ async function handleViewCartEvent(data) {
         {},
         function() {
             console.log("view_cart event successfully tracked to Hightouch with additional params:", eventPayload);
+        }
+    );
+}
+
+// Handle Begin Checkout Event
+async function handleBeginCheckoutEvent(data) {
+    if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
+        console.warn("begin_checkout event is missing required ecommerce or items data:", data);
+        return;
+    }
+
+    const additionalParams = await getAdditionalParams();
+
+    const eventPayload = {
+        transaction_id: data.ecommerce.transaction_id || null,
+        value: parseFloat(data.ecommerce.value),
+        currency: data.ecommerce.currency,
+        quantity: parseInt(data.ecommerce.quantity, 10) || null,
+        tax: parseFloat(data.ecommerce.tax) || null,
+        fee: parseFloat(data.ecommerce.fee) || null,
+        coupon: data.ecommerce.coupon || [],
+        items: data.ecommerce.items.map(item => ({
+            item_id: item.item_id,
+            item_name: item.item_name,
+            price: parseFloat(item.price)
+        })),
+        ...additionalParams // Merge additional parameters into the payload
+    };
+
+    // Send the event to Hightouch
+    window.htevents.track(
+        "begin_checkout",
+        eventPayload,
+        {},
+        function() {
+            console.log("begin_checkout event successfully tracked to Hightouch with additional params:", eventPayload);
         }
     );
 }
