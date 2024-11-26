@@ -222,6 +222,12 @@ function monitorDataLayer() {
             console.log("Processing remove_from_cart event:", data);
             handleRemoveFromCartEvent(data);
         }
+        
+        // Check for view_cart event
+        if (data.event === "view_cart") {
+            console.log("Processing view_cart event:", data);
+            handleViewCartEvent(data);
+        }
     };
 }
 
