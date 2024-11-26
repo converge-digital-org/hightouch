@@ -229,6 +229,12 @@ function monitorDataLayer() {
             console.log("Processing remove_from_cart event:", data);
             handleRemoveFromCartEvent(data);
         }
+
+        // Check for view_cart event
+        if (data.event === "view_cart") {
+            console.log("Processing view_cart event:", data);
+            handleViewCartEvent(data);
+        }
     };
 }
 
@@ -303,4 +309,36 @@ async function handleRemoveFromCartEvent(data) {
             }
         );
     });
+}
+
+// Handle View Cart Event
+async function handleViewCartEvent(data) {
+    if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
+        console.warn("view_cart event is missing required ecommerce or items data:", data);
+        return;
+    }
+
+    const additionalParams = await getAdditionalParams();
+
+    const eventPayload = {
+        value: parseFloat(data.ecommerce.value),
+        currency: data.ecommerce.currency,
+        items: data.ecommerce.items.map(item => ({
+            item_id: item.item_id,
+            item_name: item.item_name,
+            price: parseFloat(item.price),
+            quantity: parseInt(item.quantity, 10)
+        })),
+        ...additionalParams // Merge additional parameters into the payload
+    };
+
+    // Send the event to Hightouch
+    window.htevents.track(
+        "view_cart",
+        eventPayload,
+        {},
+        function() {
+            console.log("view_cart event successfully tracked to Hightouch with additional params:", eventPayload);
+        }
+    );
 }
