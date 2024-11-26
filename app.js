@@ -241,6 +241,12 @@ function monitorDataLayer() {
             console.log("Processing begin_checkout event:", data);
             handleBeginCheckoutEvent(data);
         }
+
+        // Check for purchase event
+        if (data.event.trim().toLowerCase() === "purchase") {
+            console.log("Processing purchase event:", data);
+            handlePurchaseEvent(data);
+        }
     };
 }
 
@@ -381,6 +387,42 @@ async function handleBeginCheckoutEvent(data) {
         {},
         function() {
             console.log("begin_checkout event successfully tracked to Hightouch with additional params:", eventPayload);
+        }
+    );
+}
+
+// Handle Purchase Event
+async function handlePurchaseEvent(data) {
+    if (!data.ecommerce || !data.ecommerce.items || !Array.isArray(data.ecommerce.items)) {
+        console.warn("purchase event is missing required ecommerce or items data:", data);
+        return;
+    }
+
+    const additionalParams = await getAdditionalParams();
+
+    const eventPayload = {
+        transaction_id: data.ecommerce.transaction_id || null,
+        value: parseFloat(data.ecommerce.value),
+        currency: data.ecommerce.currency,
+        quantity: parseInt(data.ecommerce.quantity, 10) || null,
+        tax: parseFloat(data.ecommerce.tax) || null,
+        fee: parseFloat(data.ecommerce.fee) || null,
+        coupon: data.ecommerce.coupon || [],
+        items: data.ecommerce.items.map(item => ({
+            item_id: item.item_id,
+            item_name: item.item_name,
+            price: parseFloat(item.price)
+        })),
+        ...additionalParams // Merge additional parameters into the payload
+    };
+
+    // Send the event to Hightouch
+    window.htevents.track(
+        "purchase",
+        eventPayload,
+        {},
+        function() {
+            console.log("purchase event successfully tracked to Hightouch with additional params:", eventPayload);
         }
     );
 }
