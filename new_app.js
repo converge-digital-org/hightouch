@@ -24,37 +24,71 @@ return sessionId;
 }
 
   // VARIABLE: EXTERNAL_ID
-  function getExternalId() {
-    function getCookie(cookieName) {
-      const name = cookieName + "=";
-      const decodedCookies = decodeURIComponent(document.cookie);
-      const cookies = decodedCookies.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.indexOf(name) === 0) {
-          return cookie.substring(name.length);
+function getExternalId() {
+    // --- Get a cookie value by name ---
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i].trim();
+            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
         }
-      }
-      return null;
+        return null;
     }
-  
+
+    // --- Set a cookie with expiration and root domain scoping ---
+    function setCookie(name, value, days) {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+
+        var hostParts = location.hostname.split('.');
+        var rootDomain = hostParts.slice(-2).join('.'); // e.g., sevenrooms.com
+
+        var cookieStr = name + "=" + encodeURIComponent(value) +
+                        expires +
+                        "; path=/" +
+                        "; domain=" + rootDomain +
+                        "; SameSite=Lax";
+
+        document.cookie = cookieStr;
+    }
+
+    // --- Get URL parameter ---
+    function getQueryParam(param) {
+        return new URLSearchParams(window.location.search).get(param);
+    }
+
+    // --- Generate a new random string for ID ---
     function generateRandomString(length) {
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-      }
-      return result;
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var result = '';
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return result;
     }
-  
-    let id = getCookie('external_id');
-    if (!id) {
-      id = generateRandomString(16);
-      document.cookie = `external_id=${id}; path=/; max-age=${365 * 24 * 60 * 60}`;
+
+    // --- Main logic for external_id ---
+    var urlValue = getQueryParam('external_id');
+    var cookieValue = getCookie('external_id');
+    var finalValue;
+
+    if (urlValue) {
+        finalValue = urlValue;
+        setCookie('external_id', finalValue, 365);
+    } else if (cookieValue) {
+        finalValue = cookieValue;
+    } else {
+        finalValue = generateRandomString(16);
+        setCookie('external_id', finalValue, 365);
     }
-  
-    return id;
-  }
+
+    return finalValue;
+}
 
 // VARIABLE: DEVICE_ID
 function getDeviceId() {
@@ -457,7 +491,6 @@ async function trackPageView() {
         {
             page_hostname: window.location.hostname,
             page_path: window.location.pathname,
-            brand: 'Brand Name Here',
             ...eventData
         },
         function () {
@@ -523,7 +556,6 @@ trackPageView();
             properties,
             {
                 source: 'dataLayer',
-                brand: 'Brand Name Here',
                 ...context
             },
             function () {
