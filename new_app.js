@@ -1,8 +1,18 @@
-// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 6/27/2025 AT 4:25 PM PT //
-// VERSION 4.3
+// HIGHTOUCH EVENTS APP.JS FILE –– LAST UPDATED: 6/30/2025 AT 4:07 PM PT //
+// VERSION 4.4
 
-// Enable debugging in development mode
-window.htevents.debug(false);
+// Safe init: Enable debugging in development mode only if htevents is loaded
+function safeInitHightouch(retries = 10) {
+    if (window.htevents && typeof window.htevents.debug === 'function') {
+        window.htevents.debug(false);
+    } else if (retries > 0) {
+        setTimeout(() => safeInitHightouch(retries - 1), 300); // Retry every 300ms
+    } else {
+        console.warn('Hightouch SDK not loaded: window.htevents is undefined.');
+    }
+}
+
+safeInitHightouch();
 
 // VARIABLE: EVENT_ID
 function generateEventID() {
